@@ -1,12 +1,24 @@
 local _, FunFact = ...
 FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0')
+_G.FunFact = FunFact
 local StdUi = LibStub('StdUi'):NewInstance()
-local FactLists = {}
+local FactLists, FactModule = {}, nil
 
 local DBdefaults = {
 	profile = {
 		Output = 'GUILD',
-		Channel = ''
+		Channel = '',
+		FactList = 'random',
+		ChannelData = {
+			['**'] = {
+				sentCount = 0
+			}
+		},
+		FactData = {
+			['**'] = {
+				sentCount = 0
+			}
+		}
 	}
 }
 
@@ -29,14 +41,62 @@ function FunFact:OnInitialize()
 	FunFact.DB = FunFact.BfDB.profile
 end
 
-function FunFact:SendMessage(msg)
-	if FunFact.DB.Output == 'CHANNEL' and FunFact.DB.Channel ~= '' then
-		SendChatMessage(msg, FunFact.DB.Output, nil, FunFact.DB.Channel)
-	elseif FunFact.DB.Output == 'SELF' then
-		FunFact.window.tbFact:SetValue(msg)
-	elseif FunFact.DB.Output ~= 'CHANNEL' then
-		local announceChannel = FunFact.DB.Output
+function FunFact:GetFact()
+	local FactList = FunFact.DB.FactList
 
+	-- If set to random pick a list to use.
+	while (FactList == 'random') do
+		local tmp = FactLists[math.random(0, #FactLists - 1)]
+		if tmp then
+			FactList = tmp.value
+		end
+	end
+
+	-- Find a random fact
+	FactModule = FunFact:GetModule('FactList_' .. FactList, true)
+	if FactModule and (#FactModule.Facts ~= 0) then
+		local fact = FactModule.Facts[math.random(0, #FactModule.Facts - 1)]
+		if fact then
+			-- Track sending
+			FunFact.DB.FactData['FactList_' .. FactList].sentCount = FunFact.DB.FactData['FactList_' .. FactList].sentCount + 1
+
+			-- Retrun the fact
+			return fact
+		end
+	end
+
+	-- We should not get to this point unless something went wrong.
+	return 'An error occurred finding a fact. I have failed my purpose. Please ridicule the person running the mod so they report my failure.'
+end
+
+function FunFact:SendMessage(msg, prefix, ChannelOverride)
+	-- output channel overtide logic
+	local announceChannel = FunFact.DB.Output
+	if ChannelOverride then
+		announceChannel = ChannelOverride
+	end
+
+	-- Figure out the fact prefix if need to add it to the message
+	if prefix then
+		pre = FunFact.DB.FactList
+		if FactModule then
+			if FactModule.displayname then
+				pre = FactModule.displayname
+			end
+		end
+
+		msg = pre .. ' fact! ' .. msg
+	end
+
+	-- Empty out the Self Fact text box
+	FunFact.window.tbFact:SetValue('')
+
+	-- Send the Message
+	if announceChannel == 'CHANNEL' and FunFact.DB.Channel ~= '' then
+		SendChatMessage(msg, announceChannel, nil, FunFact.DB.Channel)
+	elseif announceChannel == 'SELF' then
+		FunFact.window.tbFact:SetValue(msg)
+	elseif announceChannel ~= 'CHANNEL' then
 		-- Do some group checking logic
 		if not IsInGroup(2) and announceChannel == 'INSTANCE_CHAT' then
 			if IsInRaid() then
@@ -50,6 +110,9 @@ function FunFact:SendMessage(msg)
 
 		--Send it!
 		SendChatMessage(msg, announceChannel, nil)
+
+		--Log it!
+		FunFact.DB.ChannelData[announceChannel].sentCount = FunFact.DB.ChannelData[announceChannel].sentCount + 1
 	else
 		print('FunFact! Has encountered an error sending the message.')
 	end
@@ -59,26 +122,28 @@ function FunFact:OnEnable()
 	self:RegisterChatCommand('funfact', 'ChatCommand')
 	self:RegisterChatCommand('fact', 'ChatCommand')
 
-	for name, submodule in SUI:IterateModules() do
-		if (string.match(name, 'FactList_')) then
+	table.insert(FactLists, {text = 'Random', value = 'random'})
 
+	for name, submodule in FunFact:IterateModules() do
+		if (string.match(name, 'FactList_')) then
 			local codeName = string.sub(name, 10)
 			local displayname = codeName
 
+			-- Load the modules Display name, If module does not have one set, lets set it for compatibility.
 			if submodule.displayname then
 				displayname = submodule.displayname
+			else
+				submodule.displayname = displayname
 			end
 
-			if FactLists[codeName] == nil then
-				FactLists[codeName] = {
-					name = displayname,
-					desciption = submodule.desciption
-				}
-			end
+			-- Toss the Displayname into the DB for easy loading
+			FunFact.DB.FactData[name].displayname = displayname
+
+			table.insert(FactLists, {text = displayname, value = codeName})
 		end
 	end
 
-	local window = StdUi:Window(nil, 'Fun facts!', 200, 220)
+	local window = StdUi:Window(nil, 'Fun facts!', 210, 270)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 
@@ -100,7 +165,7 @@ function FunFact:OnEnable()
 	window.FACT:SetScript(
 		'OnClick',
 		function(this)
-			FunFact:SendMessage('FunFact! ' .. facts[math.random(0, #facts - 1)])
+			FunFact:SendMessage(FunFact:GetFact(), true)
 		end
 	)
 	window.MORE:SetScript(
@@ -110,10 +175,15 @@ function FunFact:OnEnable()
 		end
 	)
 
+	local FactOptionslbl = StdUi:Label(window, 'What facts should we tell?', nil, nil, 180, 20)
+	local FactOptions = StdUi:Dropdown(window, 190, 20, FactLists, FunFact.DB.FactList)
+
 	local Outputlbl = StdUi:Label(window, 'Who should we inform?', nil, nil, 180, 20)
 	local Output = StdUi:Dropdown(window, 190, 20, items, FunFact.DB.Output)
+
 	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
 	local Channel = StdUi:EditBox(window, 190, 20, FunFact.DB.Channel)
+
 	window.tbFact = StdUi:EditBox(window, 190, 20, '')
 	if value == 'CHANNEL' then
 		Channel:Enable()
@@ -121,6 +191,9 @@ function FunFact:OnEnable()
 		Channel:Disable()
 	end
 
+	FactOptions.OnValueChanged = function(self, value)
+		FunFact.DB.FactList = value
+	end
 	Output.OnValueChanged = function(self, value)
 		FunFact.DB.Output = value
 		if value == 'CHANNEL' then
@@ -133,10 +206,15 @@ function FunFact:OnEnable()
 		FunFact.DB.Channel = value
 	end
 
-	StdUi:GlueTop(Outputlbl, window, 0, -45)
+	StdUi:GlueTop(FactOptionslbl, window, 0, -35)
+	StdUi:GlueBelow(FactOptions, FactOptionslbl, 0, -5)
+
+	StdUi:GlueBelow(Outputlbl, FactOptions, 0, -10)
 	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
+
 	StdUi:GlueBelow(Channellbl, Output, 0, -10)
 	StdUi:GlueBelow(Channel, Channellbl, 0, -2)
+
 	StdUi:GlueBelow(window.tbFact, Channel, 0, -10)
 
 	window:Hide()
@@ -158,7 +236,7 @@ function FunFact:ChatCommand(input)
 			return
 		end
 
-		SendChatMessage('FunFact! ' .. facts[math.random(0, #facts - 1)], input, nil)
+		FunFact:SendMessage(FunFact:GetFact(), true, input)
 	else
 		FunFact.window:Show()
 	end
