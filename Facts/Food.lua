@@ -1,4 +1,8 @@
-local Facts = {
+local FunFact = FunFact
+local module = FunFact:NewModule('FactList_Food')
+module.desciption = 'That stuff most people sutff shove in their pie hole. We aren\'t going to talk about what karen does.'
+
+module.Facts = {
 	'A survey showed 29% of adults say they have been splashed or scalded by hot drinks while dunking biscuits.',
 	'Ortharexia Nervosa is an eating disorder where the sufferer is obsessed with eating healthy food.',
 	'Ketchup was sold in the 1830’s as medicine.',

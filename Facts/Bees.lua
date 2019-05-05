@@ -1,4 +1,8 @@
-local Facts = {
+local FunFact = FunFact
+local module = FunFact:NewModule('FactList_Bees')
+module.desciption = 'The best animals according to a 2018 poll of 2 beekeepers.'
+
+module.Facts = {
 	'The honey bee has been around for millions of years.',
 	'Honey bees, scientifically also known as Apis mellifera, which mean "honey-carrying bee", are environmentally friendly and are vital as pollinators.',
 	'Bees are the only insect that produces food eaten by man.',

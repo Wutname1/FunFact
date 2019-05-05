@@ -1,4 +1,8 @@
-local Facts = {
+local FunFact = FunFact
+local module = FunFact:NewModule('FactList_Animals')
+module.desciption = 'A random assortment of facts about all animals'
+
+module.Facts = {
 	'Gorillas can catch human colds and other illnesses.',
 	'A newborn Chinese water deer is so small it can almost be held in the palm of the hand.',
 	'Ostriches can run faster than horses, and the males can roar like lions.',
