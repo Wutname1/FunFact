@@ -7,3 +7,4 @@
 ## SavedVariables: FunFactDB
 
 loader.xml
+Facts\FactList.xml
