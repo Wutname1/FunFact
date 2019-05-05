@@ -8,5 +8,5 @@
     <Include file="libs\AceLocale-3.0\AceLocale-3.0.xml" />
     <Include file="libs\StdUi\StdUi.xml" />
 
-    <Script file="BeeFacts.lua" />
+    <Script file="FunFact.lua" />
 </Ui>

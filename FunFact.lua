@@ -1,5 +1,5 @@
-local _, BeeFacts = ...
-BeeFacts = LibStub('AceAddon-3.0'):NewAddon(BeeFacts, 'BeeFacts', 'AceConsole-3.0')
+local _, FunFact = ...
+FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0')
 local StdUi = LibStub('StdUi'):NewInstance()
 
 local DBdefaults = {
@@ -9,7 +9,7 @@ local DBdefaults = {
 	}
 }
 
-function BeeFacts:isInTable(tab, frameName)
+function FunFact:isInTable(tab, frameName)
 	if tab == nil or frameName == nil then
 		return false
 	end
@@ -23,18 +23,18 @@ function BeeFacts:isInTable(tab, frameName)
 	return false
 end
 
-function BeeFacts:OnInitialize()
-	BeeFacts.BfDB = LibStub('AceDB-3.0'):New('BeeFactsDB', DBdefaults)
-	BeeFacts.DB = BeeFacts.BfDB.profile
+function FunFact:OnInitialize()
+	FunFact.BfDB = LibStub('AceDB-3.0'):New('FunFactDB', DBdefaults)
+	FunFact.DB = FunFact.BfDB.profile
 end
 
-function BeeFacts:SendMessage(msg)
-	if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
-		SendChatMessage(msg, BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
-	elseif BeeFacts.DB.Output == 'SELF' then
-		BeeFacts.window.tbFact:SetValue(msg)
-	elseif BeeFacts.DB.Output ~= 'CHANNEL' then
-		local announceChannel = BeeFacts.DB.Output
+function FunFact:SendMessage(msg)
+	if FunFact.DB.Output == 'CHANNEL' and FunFact.DB.Channel ~= '' then
+		SendChatMessage(msg, FunFact.DB.Output, nil, FunFact.DB.Channel)
+	elseif FunFact.DB.Output == 'SELF' then
+		FunFact.window.tbFact:SetValue(msg)
+	elseif FunFact.DB.Output ~= 'CHANNEL' then
+		local announceChannel = FunFact.DB.Output
 
 		-- Do some group checking logic
 		if not IsInGroup(2) and announceChannel == 'INSTANCE_CHAT' then
@@ -50,15 +50,15 @@ function BeeFacts:SendMessage(msg)
 		--Send it!
 		SendChatMessage(msg, announceChannel, nil)
 	else
-		print('Beefacts! Has encountered an error sending the message.')
+		print('FunFact! Has encountered an error sending the message.')
 	end
 end
 
-function BeeFacts:OnEnable()
-	self:RegisterChatCommand('beefact', 'ChatCommand')
-	self:RegisterChatCommand('beefacts', 'ChatCommand')
+function FunFact:OnEnable()
+	self:RegisterChatCommand('funfact', 'ChatCommand')
+	self:RegisterChatCommand('fact', 'ChatCommand')
 
-	local window = StdUi:Window(nil, 'Bee facts!', 200, 220)
+	local window = StdUi:Window(nil, 'Fun facts!', 200, 220)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 
@@ -80,20 +80,20 @@ function BeeFacts:OnEnable()
 	window.FACT:SetScript(
 		'OnClick',
 		function(this)
-			BeeFacts:SendMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)])
+			FunFact:SendMessage('FunFact! ' .. facts[math.random(0, #facts - 1)])
 		end
 	)
 	window.MORE:SetScript(
 		'OnClick',
 		function(this)
-			BeeFacts:SendMessage('Would you like to know more?')
+			FunFact:SendMessage('Would you like to know more?')
 		end
 	)
 
 	local Outputlbl = StdUi:Label(window, 'Who should we inform?', nil, nil, 180, 20)
-	local Output = StdUi:Dropdown(window, 190, 20, items, BeeFacts.DB.Output)
+	local Output = StdUi:Dropdown(window, 190, 20, items, FunFact.DB.Output)
 	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
-	local Channel = StdUi:EditBox(window, 190, 20, BeeFacts.DB.Channel)
+	local Channel = StdUi:EditBox(window, 190, 20, FunFact.DB.Channel)
 	window.tbFact = StdUi:EditBox(window, 190, 20, '')
 	if value == 'CHANNEL' then
 		Channel:Enable()
@@ -102,7 +102,7 @@ function BeeFacts:OnEnable()
 	end
 
 	Output.OnValueChanged = function(self, value)
-		BeeFacts.DB.Output = value
+		FunFact.DB.Output = value
 		if value == 'CHANNEL' then
 			Channel:Enable()
 		else
@@ -110,7 +110,7 @@ function BeeFacts:OnEnable()
 		end
 	end
 	Channel.OnValueChanged = function(self, value)
-		BeeFacts.DB.Channel = value
+		FunFact.DB.Channel = value
 	end
 
 	StdUi:GlueTop(Outputlbl, window, 0, -45)
@@ -120,10 +120,10 @@ function BeeFacts:OnEnable()
 	StdUi:GlueBelow(window.tbFact, Channel, 0, -10)
 
 	window:Hide()
-	BeeFacts.window = window
+	FunFact.window = window
 end
 
-function BeeFacts:ChatCommand(input)
+function FunFact:ChatCommand(input)
 	if input and input ~= '' then
 		local AllowedChannels = {
 			'RAID',
@@ -133,13 +133,13 @@ function BeeFacts:ChatCommand(input)
 			'GUILD'
 		}
 		input = input:upper()
-		if not BeeFacts:isInTable(AllowedChannels, input) then
-			print('BeeFacts Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, YELL, and GUILD')
+		if not FunFact:isInTable(AllowedChannels, input) then
+			print('FunFact Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, YELL, and GUILD')
 			return
 		end
 
-		SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], input, nil)
+		SendChatMessage('FunFact! ' .. facts[math.random(0, #facts - 1)], input, nil)
 	else
-		BeeFacts.window:Show()
+		FunFact.window:Show()
 	end
 end

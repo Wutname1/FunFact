@@ -1,9 +1,9 @@
 ## Interface: 80100
-## Title: BeeFacts
-## Notes: Facts. About bees.
+## Title: FunFact
+## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
 ## Author: Wutname1
 ## X-Curse-Project-ID: 308000
-## SavedVariables: BeeFactsDB
+## SavedVariables: FunFactDB
 
 loader.xml
