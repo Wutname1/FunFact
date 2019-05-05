@@ -1,6 +1,7 @@
 local _, FunFact = ...
 FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0')
 local StdUi = LibStub('StdUi'):NewInstance()
+local FactLists = {}
 
 local DBdefaults = {
 	profile = {
@@ -57,6 +58,25 @@ end
 function FunFact:OnEnable()
 	self:RegisterChatCommand('funfact', 'ChatCommand')
 	self:RegisterChatCommand('fact', 'ChatCommand')
+
+	for name, submodule in SUI:IterateModules() do
+		if (string.match(name, 'FactList_')) then
+
+			local codeName = string.sub(name, 10)
+			local displayname = codeName
+
+			if submodule.displayname then
+				displayname = submodule.displayname
+			end
+
+			if FactLists[codeName] == nil then
+				FactLists[codeName] = {
+					name = displayname,
+					desciption = submodule.desciption
+				}
+			end
+		end
+	end
 
 	local window = StdUi:Window(nil, 'Fun facts!', 200, 220)
 	window:SetPoint('CENTER', 0, 0)
