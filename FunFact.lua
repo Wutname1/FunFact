@@ -1,6 +1,9 @@
 local _, FunFact = ...
 FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0')
+local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true)
 _G.FunFact = FunFact
+FunFact.L = L
+
 local StdUi = LibStub('StdUi'):NewInstance()
 local FactLists, FactModule = {}, nil
 
@@ -148,14 +151,14 @@ function FunFact:OnEnable()
 	window:SetFrameStrata('DIALOG')
 
 	local items = {
-		{text = 'Instance chat', value = 'INSTANCE_CHAT'},
-		{text = 'RAID', value = 'RAID'},
+		{text = L['Instance chat'], value = 'INSTANCE_CHAT'},
+		{text = RAID, value = 'RAID'},
 		{text = 'PARTY', value = 'PARTY'},
 		{text = 'SAY', value = 'SAY'},
 		{text = 'YELL', value = 'YELL'},
 		{text = 'GUILD', value = 'GUILD'},
-		{text = 'No chat', value = 'SELF'},
-		{text = 'Custom channel', value = 'CHANNEL'}
+		{text = L['No chat'], value = 'SELF'},
+		{text = L['Custom channel'], value = 'CHANNEL'}
 	}
 
 	window.FACT = StdUi:Button(window, 190, 20, 'FACT!')
@@ -171,17 +174,17 @@ function FunFact:OnEnable()
 	window.MORE:SetScript(
 		'OnClick',
 		function(this)
-			FunFact:SendMessage('Would you like to know more?')
+			FunFact:SendMessage(L['Would you like to know more?'])
 		end
 	)
 
-	local FactOptionslbl = StdUi:Label(window, 'What facts should we tell?', nil, nil, 180, 20)
+	local FactOptionslbl = StdUi:Label(window, L['What facts should we tell?'], nil, nil, 180, 20)
 	local FactOptions = StdUi:Dropdown(window, 190, 20, FactLists, FunFact.DB.FactList)
 
-	local Outputlbl = StdUi:Label(window, 'Who should we inform?', nil, nil, 180, 20)
+	local Outputlbl = StdUi:Label(window, L['Who should we inform?'], nil, nil, 180, 20)
 	local Output = StdUi:Dropdown(window, 190, 20, items, FunFact.DB.Output)
 
-	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
+	local Channellbl = StdUi:Label(window, L['Channel name:'], nil, nil, 180, 20)
 	local Channel = StdUi:EditBox(window, 190, 20, FunFact.DB.Channel)
 
 	window.tbFact = StdUi:EditBox(window, 190, 20, '')
