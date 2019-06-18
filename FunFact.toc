@@ -3,7 +3,7 @@
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
 ## Author: Wutname1
-## X-Curse-Project-ID: 308000
+## X-Curse-Project-ID: 324692
 ## SavedVariables: FunFactDB
 
 loader.xml
