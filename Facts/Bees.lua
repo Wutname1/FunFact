@@ -1,7 +1,7 @@
 local FunFact = FunFact
 local module = FunFact:NewModule('FactList_Bees')
 module.desciption = 'The best animals according to a 2018 poll of 2 beekeepers.'
-module.displayname = 'Bees!'
+module.displayname = 'Bee'
 
 module.Facts = {
 	'The honey bee has been around for millions of years.',
