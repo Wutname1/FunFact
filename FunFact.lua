@@ -154,8 +154,6 @@ function FunFact:OnEnable()
 		{text = L['Instance chat'], value = 'INSTANCE_CHAT'},
 		{text = RAID, value = 'RAID'},
 		{text = 'PARTY', value = 'PARTY'},
-		{text = 'SAY', value = 'SAY'},
-		{text = 'YELL', value = 'YELL'},
 		{text = 'GUILD', value = 'GUILD'},
 		{text = L['No chat'], value = 'SELF'},
 		{text = L['Custom channel'], value = 'CHANNEL'}
@@ -229,13 +227,11 @@ function FunFact:ChatCommand(input)
 		local AllowedChannels = {
 			'RAID',
 			'PARTY',
-			'SAY',
-			'YELL',
 			'GUILD'
 		}
 		input = input:upper()
 		if not FunFact:isInTable(AllowedChannels, input) then
-			print('FunFact Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, YELL, and GUILD')
+			print('FunFact Error! You specified "' .. input .. '" you can only specify RAID, PARTY, and GUILD')
 			return
 		end
 
