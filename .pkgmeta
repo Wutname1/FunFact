@@ -15,7 +15,7 @@ externals:
   libs/AceLocale-3.0:
     url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
   libs/StdUi:
-    url: https://github.com/kaminaris/StdUi.git
+    url: https://github.com/Wutname1/StdUi.git
 
 ignore:
     .travis.yml

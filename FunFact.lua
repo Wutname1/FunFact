@@ -146,7 +146,7 @@ function FunFact:OnEnable()
 		end
 	end
 
-	local window = StdUi:Window(nil, 'Fun facts!', 210, 270)
+	local window = StdUi:Window(nil, 210, 270, 'Fun facts!')
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 

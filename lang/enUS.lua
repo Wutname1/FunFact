@@ -1,3 +1,9 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("FunFact", "enUS", true, debug)
+local L = LibStub('AceLocale-3.0'):NewLocale('FunFact', 'enUS', true, debug)
 
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, handle-subnamespaces="none")@
+L['Channel name:'] = true
+L['Custom channel'] = true
+L['Instance chat'] = true
+L['No chat'] = true
+L['What facts should we tell?'] = true
+L['Who should we inform?'] = true
+L['Would you like to know more?'] = true
