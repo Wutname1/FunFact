@@ -4,6 +4,7 @@
 ## Version: @project-version@
 ## Author: Wutname1
 ## X-Curse-Project-ID: 324692
+## X-Wago-ID: J96EYg6g
 ## SavedVariables: FunFactDB
 
 lang\localization.xml
