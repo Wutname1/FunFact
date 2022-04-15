@@ -1,3 +1,4 @@
+---@class FunFact_locale
 local L = LibStub('AceLocale-3.0'):NewLocale('FunFact', 'enUS', true, debug)
 
 L['Channel name:'] = true

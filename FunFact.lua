@@ -1,6 +1,5 @@
-local _, FunFact = ...
-FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0')
-local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true)
+local FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0') ---@class FunFact : AceAddon, AceConsole-3.0
+local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true) ---@type FunFact_locale
 _G.FunFact = FunFact
 FunFact.L = L
 
@@ -89,7 +88,7 @@ function FunFact:SendMessage(msg, prefix, ChannelOverride)
 			end
 		end
 
-		msg = pre .. ' fact! ' .. msg
+		msg = pre .. ' FunFact! ' .. msg
 	end
 
 	-- Empty out the Self Fact text box

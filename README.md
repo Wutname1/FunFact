@@ -13,7 +13,6 @@
 - Florida has more toll roads and bridges than any other state in the Union
 - Dogs see much better than humans at night because they have a special light reflecting layer behind their eyes.
 - Frozen Margarita was invented in Texas by Mariano Martinez in 1971
-- To use FunFact type /funfact and it will output a fun fact to the chat channel of your choice
 
 ## Slash Commands:
 
