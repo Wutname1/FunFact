@@ -80,6 +80,7 @@ function FunFact:SendMessage(msg, prefix, ChannelOverride)
 	end
 
 	-- Figure out the fact prefix if need to add it to the message
+	local pre = ''
 	if prefix then
 		pre = FunFact.DB.FactList
 		if FactModule then
@@ -186,7 +187,7 @@ function FunFact:OnEnable()
 	local Channel = StdUi:EditBox(window, 190, 20, FunFact.DB.Channel)
 
 	window.tbFact = StdUi:EditBox(window, 190, 20, '')
-	if value == 'CHANNEL' then
+	if FunFact.DB.Output == 'CHANNEL' then
 		Channel:Enable()
 	else
 		Channel:Disable()
