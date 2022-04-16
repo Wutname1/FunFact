@@ -1,4 +1,4 @@
-local FunFact = LibStub('AceAddon-3.0'):NewAddon(FunFact, 'FunFact', 'AceConsole-3.0') ---@class FunFact : AceAddon, AceConsole-3.0
+local FunFact = LibStub('AceAddon-3.0'):NewAddon('FunFact', 'AceConsole-3.0') ---@class FunFact : AceAddon, AceConsole-3.0
 local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true) ---@type FunFact_locale
 _G.FunFact = FunFact
 FunFact.L = L
