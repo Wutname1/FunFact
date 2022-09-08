@@ -6,6 +6,7 @@
 	<Script file="Cats.lua" />
 	<Script file="Dogs.lua" />
 	<Script file="Food.lua" />
+	<Script file="Flags.lua" />
 	<Script file="USA.lua" />
 	<Script file="Ukraine.lua" />
 	<Script file="WoW.lua" />
