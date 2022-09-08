@@ -7,7 +7,5 @@
 ## X-Wago-ID: J96EYg6g
 ## SavedVariables: FunFactDB
 
-lang\localization.xml
-
 loader.xml
 Facts\FactList.xml

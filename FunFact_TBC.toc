@@ -6,7 +6,5 @@
 ## X-Curse-Project-ID: 324692
 ## SavedVariables: FunFactDB
 
-lang\localization.xml
-
 loader.xml
 Facts\FactList.xml
