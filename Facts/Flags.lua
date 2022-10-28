@@ -12,7 +12,7 @@ module.Facts = {
 	'Some countries will use their national bird on their flags to reflect the countries heritage, like the flag of Ecuador which has a bird of the Andes called a Condor.',
 	'The colors used for national flags often ties into the history of the country.',
 	'Purple is the rarest color to be used on a flag.',
-	'The flag of Belize has the most colors of any flag in the world',
+	'The flag of Belize has the most colors of any flag in the world. (12)',
 	'Denmark has the oldest flag in the world. First used in 1625 and is still the same today. The design itself however was created in 1219.',
 	'South Sudan has the newest flag in the world it was adopted on July 9, 2010.',
 	'There are 4 national flags in the world that feature firearms.',
