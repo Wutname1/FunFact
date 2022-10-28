@@ -15,6 +15,11 @@ local SquareButtonCoords = {
 	DELETE = { 0.01562500,    0.20312500,     0.01562500,     0.20312500};
 };
 
+---@class StdUi_SquareButton : Button, SquareButtonMethods
+---@field icon Texture
+---@field iconDisabled Texture
+
+---@class SquareButtonMethods
 local SquareButtonMethods = {
 	SetIconDisabled = function(self, texture, iconWidth, iconHeight)
 		self.iconDisabled = self.stdUi:Texture(self, iconWidth, iconHeight, texture);
@@ -37,7 +42,7 @@ local SquareButtonMethods = {
 };
 
 function StdUi:SquareButton(parent, width, height, icon)
-	local button = CreateFrame('Button', nil, parent);
+	local button = CreateFrame('Button', name, parent); ---@type StdUi_SquareButton
 	button.stdUi = self;
 
 	self:InitWidget(button);
@@ -85,8 +90,8 @@ end
 
 --- Creates a button with only a highlight
 --- @return Button
-function StdUi:HighlightButton(parent, width, height, text, inherit)
-	local button = CreateFrame('Button', nil, parent, inherit);
+function StdUi:HighlightButton(parent, width, height, text, inherit, name)
+	local button = CreateFrame('Button', name, parent, inherit);
 	self:InitWidget(button);
 	self:SetObjSize(button, width, height);
 	button.text = self:ButtonLabel(button, text);
@@ -105,11 +110,11 @@ function StdUi:HighlightButton(parent, width, height, text, inherit)
 end
 
 --- @return Button
-function StdUi:Button(parent, width, height, text, inherit)
-	local button = self:HighlightButton(parent, width, height, text, inherit)
+function StdUi:Button(parent, width, height, text, inherit, name)
+	local button = self:HighlightButton(parent, width, height, text, inherit, name)
 	button.stdUi = self;
 
-	button:SetHighlightTexture('Interface\\AddOns\\FunFact\\libs\\StdUi\\media\\Empty.tga');
+	button:SetHighlightTexture('');
 
 	self:ApplyBackdrop(button);
 	self:HookDisabledBackdrop(button);
