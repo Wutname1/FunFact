@@ -154,6 +154,8 @@ function FunFact:OnEnable()
 	local items = {
 		{text = L['Instance chat'], value = 'INSTANCE_CHAT'},
 		{text = RAID, value = 'RAID'},
+		{text = 'SAY', value = 'SAY'},
+		{text = 'YELL', value = 'YELL'},
 		{text = 'PARTY', value = 'PARTY'},
 		{text = 'GUILD', value = 'GUILD'},
 		{text = L['No chat'], value = 'SELF'},
@@ -228,7 +230,10 @@ function FunFact:ChatCommand(input)
 		local AllowedChannels = {
 			'RAID',
 			'PARTY',
-			'GUILD'
+			'GUILD',
+			'INSTANCE_CHAT',
+			'SAY',
+			'YELL'
 		}
 		input = input:upper()
 		if not FunFact:isInTable(AllowedChannels, input) then

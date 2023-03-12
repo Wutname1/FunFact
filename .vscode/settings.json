@@ -292,7 +292,8 @@
     "CloseWindows",
     "RealMobHealth",
     "RegisterAsWidget",
-    "RAID"
+    "RAID",
+    "GetCursorPosition"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode",
