@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30401
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
