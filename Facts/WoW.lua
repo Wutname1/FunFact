@@ -1,7 +1,8 @@
 local FunFact = FunFact
 local module = FunFact:NewModule('FactList_WoW')
 module.desciption = 'Facts about this game called World of Warcraft'
-module.facts = {
+
+module.Facts = {
 	'Prehistoric hunter-gatherer tribes had an average group limit of 50 people. Incidentally, modern research shows that maximum group player cohesiveness occurs at a limit of 50 players.',
 	'Colleen Lachowicz during her run for state Senate in Maine came under political attack for having played WoW and therefore being out-of-touch with reality and living in a "fantasy world." Colleen ending up winning the Senate seat.',
 	'Yugioh has made more money than X-Men, Lord of The Rings, James Bond, Call of Duty, Superman, Star Trek, WoW, or League of Legends.',

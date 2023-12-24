@@ -5,9 +5,13 @@
 	<Script file="Bees.lua" />
 	<Script file="Cats.lua" />
 	<Script file="Dogs.lua" />
-	<Script file="Food.lua" />
 	<Script file="Flags.lua" />
-	<Script file="USA.lua" />
+	<Script file="Food.lua" />
+	<Script file="Pizza.lua" />
+	<Script file="Tacos.lua" />
+	<Script file="Technology.lua" />
 	<Script file="Ukraine.lua" />
+	<Script file="USA.lua" />
+	<Script file="VideoGames.lua" />
 	<Script file="WoW.lua" />
 </Ui>
