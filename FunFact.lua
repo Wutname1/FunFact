@@ -237,7 +237,7 @@ function FunFact:ChatCommand(input)
 		}
 		input = input:upper()
 		if not FunFact:isInTable(AllowedChannels, input) then
-			print('FunFact Error! You specified "' .. input .. '" you can only specify RAID, PARTY, and GUILD')
+			print('FunFact Error! You specified "' .. input .. '" valid options are: SAY, YELL, INSTANCE_CHAT, RAID, PARTY, and GUILD')
 			return
 		end
 

@@ -5,7 +5,7 @@
 ## Author: Wutname1
 ## X-Curse-Project-ID: 324692
 ## SavedVariables: FunFactDB
-## IconTexture: Interface/Addons/FunFact/FF_B
+## IconTexture: Interface/Addons/FunFact/FunFactLogo
 
 loader.xml
 Facts\FactList.xml
