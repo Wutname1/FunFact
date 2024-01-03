@@ -4,6 +4,7 @@
 	<Script file="Animals.lua" />
 	<Script file="Bees.lua" />
 	<Script file="Cats.lua" />
+	<Script file="DadJokes.lua" />
 	<Script file="Dogs.lua" />
 	<Script file="Flags.lua" />
 	<Script file="Food.lua" />
