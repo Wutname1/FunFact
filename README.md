@@ -26,15 +26,25 @@ You can also macro fun facts by specifying the chat channel you want the fact to
 
 `/fact guild`
 
+
 ## Currently loaded with Facts on:
 
 - 300 Random animal facts
-- 115 bee facts
-- 496 cat facts
-- 140 dog facts
-- 124 food facts
+- 115 Bee facts
+- 496 Cat facts
+- 140 Dog facts
+- 176 Flag facts
+- 124 Food facts
+- 98 Pizza facts
+- 99 Taco facts
+- 90 Tech facts
 - 54 Ukraine facts
 - 595 USA facts
+- 190 Video Game facts
+- 28 World of Warcraft facts
+
+## And a few Jokes!
+- 216 Dad Jokes
 
 More Fact categories will be added over time! Have more facts? Send them to me!
 
