@@ -294,7 +294,8 @@
     "RegisterAsWidget",
     "RAID",
     "GetCursorPosition",
-    "show"
+    "show",
+    "includes"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode",
