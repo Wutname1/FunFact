@@ -1,4 +1,4 @@
-## Interface: 100200
+## Interface: 100205
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
