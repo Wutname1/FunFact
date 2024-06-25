@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 100207, 110000
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
@@ -6,7 +6,7 @@
 ## X-Curse-Project-ID: 324692
 ## X-Wago-ID: J96EYg6g
 ## SavedVariables: FunFactDB
-## IconTexture: Interface/Addons/FunFact/FF_W
+## IconTexture: Interface/Addons/FunFact/FunFactLogo
 
 loader.xml
 Facts\FactList.xml

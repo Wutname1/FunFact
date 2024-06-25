@@ -1,1 +1,7 @@
 package-as: FunFact
+
+ignore:
+    README.md
+    *.Definition.lua
+
+enable-nolib-creation: no

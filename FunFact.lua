@@ -1,26 +1,27 @@
-local FunFact = LibStub('AceAddon-3.0'):NewAddon('FunFact', 'AceConsole-3.0') ---@class FunFact : AceAddon, AceConsole-3.0
+---@class FunFact : AceAddon, AceConsole-3.0
+local FunFact = LibStub('AceAddon-3.0'):NewAddon('FunFact', 'AceConsole-3.0')
 ---@diagnostic disable-next-line: undefined-field
 local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true) ---@type FunFact_locale
 _G.FunFact = FunFact
 FunFact.L = L
 
 local StdUi = LibStub('StdUi'):NewInstance()
-local FactLists, FactModule = {}, nil
+local FactLists = {}
+local FactModule = nil ---@type FunFact.Module
 
+---@class FunFact.DB
 local DBdefaults = {
-	profile = {
-		Output = 'GUILD',
-		Channel = '',
-		FactList = 'random',
-		ChannelData = {
-			['**'] = {
-				sentCount = 0
-			}
-		},
-		FactData = {
-			['**'] = {
-				sentCount = 0
-			}
+	Output = 'GUILD',
+	Channel = '',
+	FactList = 'random',
+	ChannelData = {
+		['**'] = {
+			sentCount = 0
+		}
+	},
+	FactData = {
+		['**'] = {
+			sentCount = 0
 		}
 	}
 }
@@ -40,8 +41,8 @@ function FunFact:isInTable(tab, frameName)
 end
 
 function FunFact:OnInitialize()
-	FunFact.BfDB = LibStub('AceDB-3.0'):New('FunFactDB', DBdefaults)
-	FunFact.DB = FunFact.BfDB.profile
+	FunFact.BfDB = LibStub('AceDB-3.0'):New('FunFactDB', {profile = DBdefaults})
+	FunFact.DB = FunFact.BfDB.profile ---@type FunFact.DB
 end
 
 function FunFact:GetFact()
@@ -56,7 +57,8 @@ function FunFact:GetFact()
 	end
 
 	-- Find a random fact
-	FactModule = FunFact:GetModule('FactList_' .. FactList, true)
+	---@diagnostic disable-next-line: assign-type-mismatch
+	FactModule = FunFact:GetModule('FactList_' .. FactList, true) ---@type FunFact.Module
 	if FactModule and (#FactModule.Facts ~= 0) then
 		local fact = FactModule.Facts[math.random(0, #FactModule.Facts - 1)]
 		if fact then
@@ -168,13 +170,13 @@ function FunFact:OnEnable()
 	window.FACT:SetPoint('BOTTOM', window.MORE, 'TOP', 0, 2)
 	window.FACT:SetScript(
 		'OnClick',
-		function(this)
+		function()
 			FunFact:SendMessage(FunFact:GetFact(), true)
 		end
 	)
 	window.MORE:SetScript(
 		'OnClick',
-		function(this)
+		function()
 			FunFact:SendMessage(L['Would you like to know more?'])
 		end
 	)
