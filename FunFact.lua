@@ -303,42 +303,49 @@ function FunFact:OnEnable()
 		Channel:Disable()
 	end
 
-	-- Fact display text box (larger multi-line)
-	local factDisplayFrame = CreateFrame('Frame', nil, window)
+	-- Fact display text box (larger multi-line, selectable)
+	local factDisplayFrame = CreateFrame('ScrollFrame', nil, window)
 	factDisplayFrame:SetPoint('TOPLEFT', Channel, 'BOTTOMLEFT', -10, -15)
 	factDisplayFrame:SetPoint('TOPRIGHT', window, 'TOPRIGHT', -25, -265)
 	factDisplayFrame:SetHeight(145)
 
 	-- Add background texture
 	factDisplayFrame.bg = factDisplayFrame:CreateTexture(nil, 'BACKGROUND')
-	factDisplayFrame.bg:SetAllPoints()
+	factDisplayFrame.bg:SetPoint('TOPLEFT', factDisplayFrame, 'TOPLEFT', -6, 6)
+	factDisplayFrame.bg:SetPoint('BOTTOMRIGHT', factDisplayFrame, 'BOTTOMRIGHT', 0, -6)
 	factDisplayFrame.bg:SetAtlas('auctionhouse-background-index', true)
 
-	-- Scrollable fact display
-	local factScroll = CreateFrame('ScrollFrame', nil, factDisplayFrame)
-	factScroll:SetPoint('TOPLEFT', factDisplayFrame, 'TOPLEFT', 8, -8)
-	factScroll:SetPoint('BOTTOMRIGHT', factDisplayFrame, 'BOTTOMRIGHT', -8, 8)
-
 	-- Modern minimal scrollbar
-	factScroll.ScrollBar = CreateFrame('EventFrame', nil, factScroll, 'MinimalScrollBar')
-	factScroll.ScrollBar:SetPoint('TOPLEFT', factDisplayFrame.bg, 'TOPRIGHT', 6, 0)
-	factScroll.ScrollBar:SetPoint('BOTTOMLEFT', factDisplayFrame.bg, 'BOTTOMRIGHT', 6, 0)
-	ScrollUtil.InitScrollFrameWithScrollBar(factScroll, factScroll.ScrollBar)
+	factDisplayFrame.ScrollBar = CreateFrame('EventFrame', nil, factDisplayFrame, 'MinimalScrollBar')
+	factDisplayFrame.ScrollBar:SetPoint('TOPLEFT', factDisplayFrame, 'TOPRIGHT', 6, 0)
+	factDisplayFrame.ScrollBar:SetPoint('BOTTOMLEFT', factDisplayFrame, 'BOTTOMRIGHT', 6, 0)
+	ScrollUtil.InitScrollFrameWithScrollBar(factDisplayFrame, factDisplayFrame.ScrollBar)
 
-	local factScrollChild = CreateFrame('Frame', nil, factScroll)
-	factScroll:SetScrollChild(factScrollChild)
-	factScrollChild:SetSize(factScroll:GetWidth(), 1)
+	-- Create the selectable text edit box
+	window.tbFact = CreateFrame('EditBox', nil, factDisplayFrame)
+	window.tbFact:SetMultiLine(true)
+	window.tbFact:SetFontObject('GameFontNormal')
+	window.tbFact:SetWidth(factDisplayFrame:GetWidth() - 20)
+	window.tbFact:SetAutoFocus(false)
+	window.tbFact:EnableMouse(true)
+	window.tbFact:SetTextColor(1, 1, 1)
+	window.tbFact:SetScript(
+		'OnTextChanged',
+		function(self)
+			ScrollingEdit_OnTextChanged(self, self:GetParent())
+		end
+	)
+	window.tbFact:SetScript(
+		'OnCursorChanged',
+		function(self, x, y, w, h)
+			ScrollingEdit_OnCursorChanged(self, x, y - 10, w, h)
+		end
+	)
+	factDisplayFrame:SetScrollChild(window.tbFact)
 
-	window.tbFact = factScrollChild:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
-	window.tbFact:SetPoint('TOPLEFT', 5, -5)
-	window.tbFact:SetPoint('TOPRIGHT', -5, -5)
-	window.tbFact:SetJustifyH('LEFT')
-	window.tbFact:SetJustifyV('TOP')
-	window.tbFact:SetWordWrap(true)
-	window.tbFact:SetText('')
+	-- Add SetValue method for compatibility with existing code
 	window.tbFact.SetValue = function(self, text)
 		self:SetText(text)
-		factScrollChild:SetHeight(math.max(self:GetStringHeight() + 10, factScroll:GetHeight()))
 	end
 
 	-- FACT! button using RemixPowerLevel style
