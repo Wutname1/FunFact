@@ -341,7 +341,7 @@ function FunFact:OnEnable()
 
 	-- FACT! button using RemixPowerLevel style
 	window.FACT = CreateFrame('Button', nil, window)
-	window.FACT:SetSize(314, 30)
+	window.FACT:SetSize(120, 25)
 	window.FACT:SetPoint('TOPLEFT', factDisplayFrame, 'BOTTOMLEFT', 0, -10)
 
 	window.FACT:SetNormalAtlas('auctionhouse-nav-button')
@@ -352,7 +352,7 @@ function FunFact:OnEnable()
 	local factNormalTexture = window.FACT:GetNormalTexture()
 	factNormalTexture:SetTexCoord(0, 1, 0, 0.7)
 
-	window.FACT.Text = window.FACT:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
+	window.FACT.Text = window.FACT:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
 	window.FACT.Text:SetPoint('CENTER')
 	window.FACT.Text:SetText('FACT!')
 	window.FACT.Text:SetTextColor(1, 1, 1, 1)
@@ -381,10 +381,10 @@ function FunFact:OnEnable()
 		end
 	)
 
-	-- More? button using RemixPowerLevel style
+	-- More? button using RemixPowerLevel style (side by side with FACT!)
 	window.MORE = CreateFrame('Button', nil, window)
-	window.MORE:SetSize(314, 25)
-	window.MORE:SetPoint('TOPLEFT', window.FACT, 'BOTTOMLEFT', 0, -5)
+	window.MORE:SetSize(120, 25)
+	window.MORE:SetPoint('LEFT', window.FACT, 'RIGHT', 5, 0)
 
 	window.MORE:SetNormalAtlas('auctionhouse-nav-button')
 	window.MORE:SetHighlightAtlas('auctionhouse-nav-button-highlight')
