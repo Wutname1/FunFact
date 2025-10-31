@@ -1,4 +1,4 @@
-## Interface: 110200,40401,11505
+## Interface: 110205,40401,11505
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
@@ -7,6 +7,17 @@
 ## X-Wago-ID: J96EYg6g
 ## SavedVariables: FunFactDB
 ## IconTexture: Interface/Addons/FunFact/FunFactLogo
+## Category: Minigames
+## Category-deDE: Minispiele
+## Category-esES: Minijuegos
+## Category-esMX: Minijuegos
+## Category-frFR: Mini-jeux
+## Category-itIT: Minigiochi
+## Category-koKR: 미니게임
+## Category-ptBR: Minijogos
+## Category-ruRU: Мини-игры
+## Category-zhCN: 迷你游戏
+## Category-zhTW: 迷你遊戲
 
 loader.xml
 Facts\FactList.xml
