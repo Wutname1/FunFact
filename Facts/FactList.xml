@@ -8,6 +8,7 @@
 	<Script file="Dogs.lua" />
 	<Script file="Flags.lua" />
 	<Script file="Food.lua" />
+	<Script file="Nachos.lua" />
 	<Script file="Pizza.lua" />
 	<Script file="Tacos.lua" />
 	<Script file="Technology.lua" />
