@@ -35,6 +35,7 @@ You can also macro fun facts by specifying the chat channel you want the fact to
 - 140 Dog facts
 - 176 Flag facts
 - 124 Food facts
+- 50 Nacho facts
 - 98 Pizza facts
 - 99 Taco facts
 - 90 Tech facts
