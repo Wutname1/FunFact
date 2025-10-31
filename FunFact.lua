@@ -98,6 +98,8 @@ function FunFact:SendMessage(msg, prefix, ChannelOverride)
 		FunFact.window.tbFact:SetValue('')
 	end
 
+	local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
+
 	-- Send the Message
 	if announceChannel == 'CHANNEL' and FunFact.DB.Channel ~= '' then
 		SendChatMessage(msg, announceChannel, nil, FunFact.DB.Channel)
@@ -153,7 +155,7 @@ function FunFact:OnEnable()
 	-- Create main window using PortraitFrameTemplate like RemixPowerLevel
 	local window = CreateFrame('Frame', 'FunFactWindow', UIParent, 'PortraitFrameTemplate')
 	ButtonFrameTemplate_HidePortrait(window)
-	window:SetSize(350, 500)
+	window:SetSize(350, 400)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 	window:SetMovable(true)
@@ -188,7 +190,7 @@ function FunFact:OnEnable()
 	-- Fact type dropdown using WowStyle1FilterDropdownTemplate
 	local FactOptions = CreateFrame('DropdownButton', nil, window, 'WowStyle1FilterDropdownTemplate')
 	FactOptions:SetPoint('TOPLEFT', FactOptionslbl, 'BOTTOMLEFT', 0, -5)
-	FactOptions:SetSize(314, 22)
+	FactOptions:SetSize(152, 22)
 
 	-- Find the current selection display name
 	local currentFactName = FunFact.DB.FactList
@@ -221,13 +223,13 @@ function FunFact:OnEnable()
 
 	-- Output channel label
 	local Outputlbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
-	Outputlbl:SetPoint('TOPLEFT', FactOptions, 'BOTTOMLEFT', 0, -10)
+	Outputlbl:SetPoint('TOPLEFT', FactOptions, 'TOPRIGHT', 10, 22)
 	Outputlbl:SetText(L['Who should we inform?'])
 
 	-- Output channel dropdown
 	local Output = CreateFrame('DropdownButton', nil, window, 'WowStyle1FilterDropdownTemplate')
 	Output:SetPoint('TOPLEFT', Outputlbl, 'BOTTOMLEFT', 0, -5)
-	Output:SetSize(314, 22)
+	Output:SetSize(152, 22)
 
 	local outputItems = {
 		{text = L['Instance chat'], value = 'INSTANCE_CHAT'},
