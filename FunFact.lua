@@ -5,7 +5,6 @@ local L = LibStub('AceLocale-3.0'):GetLocale('FunFact', true) ---@type FunFact_l
 _G.FunFact = FunFact
 FunFact.L = L
 
-local StdUi = LibStub('StdUi'):NewInstance()
 local FactLists = {}
 local FactModule = nil ---@type FunFact.Module
 
@@ -94,8 +93,10 @@ function FunFact:SendMessage(msg, prefix, ChannelOverride)
 		msg = pre .. ' FunFact! ' .. msg
 	end
 
-	-- Empty out the Self Fact text box
-	FunFact.window.tbFact:SetValue('')
+	-- Empty out the Self Fact text box only if SELF mode is active
+	if announceChannel ~= 'SELF' then
+		FunFact.window.tbFact:SetValue('')
+	end
 
 	-- Send the Message
 	if announceChannel == 'CHANNEL' and FunFact.DB.Channel ~= '' then
@@ -149,11 +150,86 @@ function FunFact:OnEnable()
 		end
 	end
 
-	local window = StdUi:Window(nil, 210, 270, 'Fun facts!')
+	-- Create main window using PortraitFrameTemplate like RemixPowerLevel
+	local window = CreateFrame('Frame', 'FunFactWindow', UIParent, 'PortraitFrameTemplate')
+	ButtonFrameTemplate_HidePortrait(window)
+	window:SetSize(350, 500)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
+	window:SetMovable(true)
+	window:EnableMouse(true)
+	window:RegisterForDrag('LeftButton')
+	window:SetScript(
+		'OnDragStart',
+		function(frame)
+			frame:StartMoving()
+		end
+	)
+	window:SetScript(
+		'OnDragStop',
+		function(frame)
+			frame:StopMovingOrSizing()
+		end
+	)
 
-	local items = {
+	if window.PortraitContainer then
+		window.PortraitContainer:Hide()
+	end
+	if window.portrait then
+		window.portrait:Hide()
+	end
+	window:SetTitle('Fun Facts!')
+
+	-- Fact type dropdown label
+	local FactOptionslbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
+	FactOptionslbl:SetPoint('TOPLEFT', window, 'TOPLEFT', 18, -40)
+	FactOptionslbl:SetText(L['What facts should we tell?'])
+
+	-- Fact type dropdown using WowStyle1FilterDropdownTemplate
+	local FactOptions = CreateFrame('DropdownButton', nil, window, 'WowStyle1FilterDropdownTemplate')
+	FactOptions:SetPoint('TOPLEFT', FactOptionslbl, 'BOTTOMLEFT', 0, -5)
+	FactOptions:SetSize(314, 22)
+
+	-- Find the current selection display name
+	local currentFactName = FunFact.DB.FactList
+	for _, factInfo in ipairs(FactLists) do
+		if factInfo.value == currentFactName then
+			currentFactName = factInfo.text
+			break
+		end
+	end
+	FactOptions:SetText(currentFactName)
+
+	-- Setup fact type dropdown
+	FactOptions:SetupMenu(
+		function(_, rootDescription)
+			for _, factInfo in ipairs(FactLists) do
+				local button =
+					rootDescription:CreateButton(
+					factInfo.text,
+					function()
+						FunFact.DB.FactList = factInfo.value
+						FactOptions:SetText(factInfo.text)
+					end
+				)
+				if FunFact.DB.FactList == factInfo.value then
+					button:SetRadio(true)
+				end
+			end
+		end
+	)
+
+	-- Output channel label
+	local Outputlbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
+	Outputlbl:SetPoint('TOPLEFT', FactOptions, 'BOTTOMLEFT', 0, -10)
+	Outputlbl:SetText(L['Who should we inform?'])
+
+	-- Output channel dropdown
+	local Output = CreateFrame('DropdownButton', nil, window, 'WowStyle1FilterDropdownTemplate')
+	Output:SetPoint('TOPLEFT', Outputlbl, 'BOTTOMLEFT', 0, -5)
+	Output:SetSize(314, 22)
+
+	local outputItems = {
 		{text = L['Instance chat'], value = 'INSTANCE_CHAT'},
 		{text = RAID, value = 'RAID'},
 		{text = 'SAY', value = 'SAY'},
@@ -164,64 +240,185 @@ function FunFact:OnEnable()
 		{text = L['Custom channel'], value = 'CHANNEL'}
 	}
 
-	window.FACT = StdUi:Button(window, 190, 20, 'FACT!')
-	window.MORE = StdUi:Button(window, 190, 20, 'More?')
-	window.MORE:SetPoint('BOTTOM', window, 'BOTTOM', 0, 2)
-	window.FACT:SetPoint('BOTTOM', window.MORE, 'TOP', 0, 2)
-	window.FACT:SetScript(
-		'OnClick',
-		function()
-			FunFact:SendMessage(FunFact:GetFact(), true)
+	-- Find current output display name
+	local currentOutputName = FunFact.DB.Output
+	for _, outputInfo in ipairs(outputItems) do
+		if outputInfo.value == currentOutputName then
+			currentOutputName = outputInfo.text
+			break
+		end
+	end
+	Output:SetText(currentOutputName)
+
+	-- Setup output dropdown
+	Output:SetupMenu(
+		function(_, rootDescription)
+			for _, outputInfo in ipairs(outputItems) do
+				local button =
+					rootDescription:CreateButton(
+					outputInfo.text,
+					function()
+						FunFact.DB.Output = outputInfo.value
+						Output:SetText(outputInfo.text)
+						if outputInfo.value == 'CHANNEL' then
+							Channel:Enable()
+						else
+							Channel:Disable()
+						end
+					end
+				)
+				if FunFact.DB.Output == outputInfo.value then
+					button:SetRadio(true)
+				end
+			end
 		end
 	)
-	window.MORE:SetScript(
-		'OnClick',
-		function()
-			FunFact:SendMessage(L['Would you like to know more?'])
+
+	-- Channel name label
+	local Channellbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
+	Channellbl:SetPoint('TOPLEFT', Output, 'BOTTOMLEFT', 0, -10)
+	Channellbl:SetText(L['Channel name:'])
+
+	-- Channel name editbox
+	local Channel = CreateFrame('EditBox', nil, window, 'InputBoxTemplate')
+	Channel:SetPoint('TOPLEFT', Channellbl, 'BOTTOMLEFT', 10, -5)
+	Channel:SetSize(304, 20)
+	Channel:SetAutoFocus(false)
+	Channel:SetMaxLetters(50)
+	Channel:SetText(FunFact.DB.Channel)
+	Channel:SetScript(
+		'OnTextChanged',
+		function(editBox, userInput)
+			if userInput then
+				FunFact.DB.Channel = editBox:GetText()
+			end
 		end
 	)
 
-	local FactOptionslbl = StdUi:Label(window, L['What facts should we tell?'], nil, nil, 180, 20)
-	local FactOptions = StdUi:Dropdown(window, 190, 20, FactLists, FunFact.DB.FactList)
-
-	local Outputlbl = StdUi:Label(window, L['Who should we inform?'], nil, nil, 180, 20)
-	local Output = StdUi:Dropdown(window, 190, 20, items, FunFact.DB.Output)
-
-	local Channellbl = StdUi:Label(window, L['Channel name:'], nil, nil, 180, 20)
-	local Channel = StdUi:EditBox(window, 190, 20, FunFact.DB.Channel)
-
-	window.tbFact = StdUi:EditBox(window, 190, 20, '')
 	if FunFact.DB.Output == 'CHANNEL' then
 		Channel:Enable()
 	else
 		Channel:Disable()
 	end
 
-	FactOptions.OnValueChanged = function(self, value)
-		FunFact.DB.FactList = value
+	-- Fact display text box (larger multi-line)
+	local factDisplayFrame = CreateFrame('Frame', nil, window)
+	factDisplayFrame:SetPoint('TOPLEFT', Channel, 'BOTTOMLEFT', -10, -15)
+	factDisplayFrame:SetPoint('TOPRIGHT', window, 'TOPRIGHT', -25, -265)
+	factDisplayFrame:SetHeight(145)
+
+	-- Add background texture
+	factDisplayFrame.bg = factDisplayFrame:CreateTexture(nil, 'BACKGROUND')
+	factDisplayFrame.bg:SetAllPoints()
+	factDisplayFrame.bg:SetAtlas('auctionhouse-background-index', true)
+
+	-- Scrollable fact display
+	local factScroll = CreateFrame('ScrollFrame', nil, factDisplayFrame)
+	factScroll:SetPoint('TOPLEFT', factDisplayFrame, 'TOPLEFT', 8, -8)
+	factScroll:SetPoint('BOTTOMRIGHT', factDisplayFrame, 'BOTTOMRIGHT', -8, 8)
+
+	-- Modern minimal scrollbar
+	factScroll.ScrollBar = CreateFrame('EventFrame', nil, factScroll, 'MinimalScrollBar')
+	factScroll.ScrollBar:SetPoint('TOPLEFT', factDisplayFrame.bg, 'TOPRIGHT', 6, 0)
+	factScroll.ScrollBar:SetPoint('BOTTOMLEFT', factDisplayFrame.bg, 'BOTTOMRIGHT', 6, 0)
+	ScrollUtil.InitScrollFrameWithScrollBar(factScroll, factScroll.ScrollBar)
+
+	local factScrollChild = CreateFrame('Frame', nil, factScroll)
+	factScroll:SetScrollChild(factScrollChild)
+	factScrollChild:SetSize(factScroll:GetWidth(), 1)
+
+	window.tbFact = factScrollChild:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	window.tbFact:SetPoint('TOPLEFT', 5, -5)
+	window.tbFact:SetPoint('TOPRIGHT', -5, -5)
+	window.tbFact:SetJustifyH('LEFT')
+	window.tbFact:SetJustifyV('TOP')
+	window.tbFact:SetWordWrap(true)
+	window.tbFact:SetText('')
+	window.tbFact.SetValue = function(self, text)
+		self:SetText(text)
+		factScrollChild:SetHeight(math.max(self:GetStringHeight() + 10, factScroll:GetHeight()))
 	end
-	Output.OnValueChanged = function(self, value)
-		FunFact.DB.Output = value
-		if value == 'CHANNEL' then
-			Channel:Enable()
-		else
-			Channel:Disable()
+
+	-- FACT! button using RemixPowerLevel style
+	window.FACT = CreateFrame('Button', nil, window)
+	window.FACT:SetSize(314, 30)
+	window.FACT:SetPoint('TOPLEFT', factDisplayFrame, 'BOTTOMLEFT', 0, -10)
+
+	window.FACT:SetNormalAtlas('auctionhouse-nav-button')
+	window.FACT:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	window.FACT:SetPushedAtlas('auctionhouse-nav-button-select')
+	window.FACT:SetDisabledAtlas('UI-CastingBar-TextBox')
+
+	local factNormalTexture = window.FACT:GetNormalTexture()
+	factNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	window.FACT.Text = window.FACT:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
+	window.FACT.Text:SetPoint('CENTER')
+	window.FACT.Text:SetText('FACT!')
+	window.FACT.Text:SetTextColor(1, 1, 1, 1)
+
+	window.FACT:HookScript(
+		'OnDisable',
+		function(btn)
+			btn.Text:SetTextColor(0.6, 0.6, 0.6, 0.6)
 		end
-	end
-	Channel.OnValueChanged = function(self, value)
-		FunFact.DB.Channel = value
-	end
+	)
 
-	StdUi:GlueTop(FactOptionslbl, window, 0, -35)
-	StdUi:GlueBelow(FactOptions, FactOptionslbl, 0, -5)
+	window.FACT:HookScript(
+		'OnEnable',
+		function(btn)
+			btn.Text:SetTextColor(1, 1, 1, 1)
+		end
+	)
 
-	StdUi:GlueBelow(Outputlbl, FactOptions, 0, -10)
-	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
+	window.FACT:SetScript(
+		'OnClick',
+		function()
+			local fact = FunFact:GetFact()
+			FunFact:SendMessage(fact, true)
+			-- Also display in window
+			window.tbFact:SetValue(fact)
+		end
+	)
 
-	StdUi:GlueBelow(Channellbl, Output, 0, -10)
-	StdUi:GlueBelow(Channel, Channellbl, 0, -2)
+	-- More? button using RemixPowerLevel style
+	window.MORE = CreateFrame('Button', nil, window)
+	window.MORE:SetSize(314, 25)
+	window.MORE:SetPoint('TOPLEFT', window.FACT, 'BOTTOMLEFT', 0, -5)
 
-	StdUi:GlueBelow(window.tbFact, Channel, 0, -10)
+	window.MORE:SetNormalAtlas('auctionhouse-nav-button')
+	window.MORE:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	window.MORE:SetPushedAtlas('auctionhouse-nav-button-select')
+	window.MORE:SetDisabledAtlas('UI-CastingBar-TextBox')
+
+	local moreNormalTexture = window.MORE:GetNormalTexture()
+	moreNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	window.MORE.Text = window.MORE:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	window.MORE.Text:SetPoint('CENTER')
+	window.MORE.Text:SetText('More?')
+	window.MORE.Text:SetTextColor(1, 1, 1, 1)
+
+	window.MORE:HookScript(
+		'OnDisable',
+		function(btn)
+			btn.Text:SetTextColor(0.6, 0.6, 0.6, 0.6)
+		end
+	)
+
+	window.MORE:HookScript(
+		'OnEnable',
+		function(btn)
+			btn.Text:SetTextColor(1, 1, 1, 1)
+		end
+	)
+
+	window.MORE:SetScript(
+		'OnClick',
+		function()
+			FunFact:SendMessage(L['Would you like to know more?'])
+		end
+	)
 
 	window:Hide()
 	FunFact.window = window
