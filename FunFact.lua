@@ -155,7 +155,7 @@ function FunFact:OnEnable()
 	-- Create main window using PortraitFrameTemplate like RemixPowerLevel
 	local window = CreateFrame('Frame', 'FunFactWindow', UIParent, 'PortraitFrameTemplate')
 	ButtonFrameTemplate_HidePortrait(window)
-	window:SetSize(350, 400)
+	window:SetSize(350, 325)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 	window:SetMovable(true)
@@ -184,7 +184,7 @@ function FunFact:OnEnable()
 
 	-- Fact type dropdown label
 	local FactOptionslbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
-	FactOptionslbl:SetPoint('TOPLEFT', window, 'TOPLEFT', 18, -40)
+	FactOptionslbl:SetPoint('TOPLEFT', window, 'TOPLEFT', 18, -35)
 	FactOptionslbl:SetText(L['What facts should we tell?'])
 
 	-- Fact type dropdown using WowStyle1FilterDropdownTemplate
@@ -223,7 +223,7 @@ function FunFact:OnEnable()
 
 	-- Output channel label
 	local Outputlbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
-	Outputlbl:SetPoint('TOPLEFT', FactOptions, 'TOPRIGHT', 10, 22)
+	Outputlbl:SetPoint('TOPLEFT', FactOptionslbl, 'TOPRIGHT', 20, 0)
 	Outputlbl:SetText(L['Who should we inform?'])
 
 	-- Output channel dropdown
@@ -278,7 +278,7 @@ function FunFact:OnEnable()
 
 	-- Channel name label
 	local Channellbl = window:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
-	Channellbl:SetPoint('TOPLEFT', Output, 'BOTTOMLEFT', 0, -10)
+	Channellbl:SetPoint('TOPLEFT', FactOptions, 'BOTTOMLEFT', 0, -10)
 	Channellbl:SetText(L['Channel name:'])
 
 	-- Channel name editbox
@@ -351,7 +351,7 @@ function FunFact:OnEnable()
 	-- FACT! button using RemixPowerLevel style
 	window.FACT = CreateFrame('Button', nil, window)
 	window.FACT:SetSize(120, 25)
-	window.FACT:SetPoint('TOPLEFT', factDisplayFrame, 'BOTTOMLEFT', 0, -10)
+	window.FACT:SetPoint('BOTTOMLEFT', window, 'BOTTOMLEFT', 5, -10)
 
 	window.FACT:SetNormalAtlas('auctionhouse-nav-button')
 	window.FACT:SetHighlightAtlas('auctionhouse-nav-button-highlight')
