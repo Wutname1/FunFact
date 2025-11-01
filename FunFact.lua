@@ -283,8 +283,8 @@ function FunFact:OnEnable()
 
 	-- Channel name editbox
 	local Channel = CreateFrame('EditBox', nil, window, 'InputBoxTemplate')
-	Channel:SetPoint('TOPLEFT', Channellbl, 'BOTTOMLEFT', 10, -5)
-	Channel:SetSize(304, 20)
+	Channel:SetPoint('LEFT', Channellbl, 'RIGHT', 10, 0)
+	Channel:SetSize(230, 20)
 	Channel:SetAutoFocus(false)
 	Channel:SetMaxLetters(50)
 	Channel:SetText(FunFact.DB.Channel)
@@ -305,9 +305,8 @@ function FunFact:OnEnable()
 
 	-- Fact display text box (larger multi-line, selectable)
 	local factDisplayFrame = CreateFrame('ScrollFrame', nil, window)
-	factDisplayFrame:SetPoint('TOPLEFT', Channel, 'BOTTOMLEFT', -10, -15)
-	factDisplayFrame:SetPoint('TOPRIGHT', window, 'TOPRIGHT', -25, -265)
-	factDisplayFrame:SetHeight(145)
+	factDisplayFrame:SetPoint('TOPLEFT', Channellbl, 'BOTTOMLEFT', 2, -17)
+	factDisplayFrame:SetSize(window:GetWidth() - 45, 170)
 
 	-- Add background texture
 	factDisplayFrame.bg = factDisplayFrame:CreateTexture(nil, 'BACKGROUND')
@@ -329,18 +328,18 @@ function FunFact:OnEnable()
 	window.tbFact:SetAutoFocus(false)
 	window.tbFact:EnableMouse(true)
 	window.tbFact:SetTextColor(1, 1, 1)
-	window.tbFact:SetScript(
-		'OnTextChanged',
-		function(self)
-			ScrollingEdit_OnTextChanged(self, self:GetParent())
-		end
-	)
-	window.tbFact:SetScript(
-		'OnCursorChanged',
-		function(self, x, y, w, h)
-			ScrollingEdit_OnCursorChanged(self, x, y - 10, w, h)
-		end
-	)
+	-- window.tbFact:SetScript(
+	-- 	'OnTextChanged',
+	-- 	function(self)
+	-- 		ScrollingEdit_OnTextChanged(self, self:GetParent())
+	-- 	end
+	-- )
+	-- window.tbFact:SetScript(
+	-- 	'OnCursorChanged',
+	-- 	function(self, x, y, w, h)
+	-- 		ScrollingEdit_OnCursorChanged(self, x, y - 10, w, h)
+	-- 	end
+	-- )
 	factDisplayFrame:SetScrollChild(window.tbFact)
 
 	-- Add SetValue method for compatibility with existing code
@@ -351,7 +350,7 @@ function FunFact:OnEnable()
 	-- FACT! button using RemixPowerLevel style
 	window.FACT = CreateFrame('Button', nil, window)
 	window.FACT:SetSize(120, 25)
-	window.FACT:SetPoint('BOTTOMLEFT', window, 'BOTTOMLEFT', 5, -10)
+	window.FACT:SetPoint('BOTTOMLEFT', window, 'BOTTOMLEFT', 10, 5)
 
 	window.FACT:SetNormalAtlas('auctionhouse-nav-button')
 	window.FACT:SetHighlightAtlas('auctionhouse-nav-button-highlight')
@@ -393,7 +392,7 @@ function FunFact:OnEnable()
 	-- More? button using RemixPowerLevel style (side by side with FACT!)
 	window.MORE = CreateFrame('Button', nil, window)
 	window.MORE:SetSize(120, 25)
-	window.MORE:SetPoint('LEFT', window.FACT, 'RIGHT', 5, 0)
+	window.MORE:SetPoint('BOTTOMRIGHT', window, 'BOTTOMRIGHT', -8, 5)
 
 	window.MORE:SetNormalAtlas('auctionhouse-nav-button')
 	window.MORE:SetHighlightAtlas('auctionhouse-nav-button-highlight')
