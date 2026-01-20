@@ -42,6 +42,12 @@ end
 function FunFact:OnInitialize()
 	FunFact.BfDB = LibStub('AceDB-3.0'):New('FunFactDB', {profile = DBdefaults})
 	FunFact.DB = FunFact.BfDB.profile ---@type FunFact.DB
+
+	-- Register with LibAT Logger if available
+	if LibAT and LibAT.Logger then
+		FunFact.logger = LibAT.Logger.RegisterAddon('FunFact')
+		FunFact.logger.info("FunFact initialized")
+	end
 end
 
 function FunFact:GetFact()
@@ -73,11 +79,60 @@ function FunFact:GetFact()
 	return 'An error occurred finding a fact. I have failed my purpose. Please ridicule the person running the mod so they report my failure.'
 end
 
+---Check if chat messaging is currently restricted by Midnight 12.0 lockdown
+---@return boolean isRestricted True if chat is locked down
+---@return string|nil reason Human-readable reason for lockdown
+function FunFact:IsInChatLockdown()
+	-- Check if the new API exists (backward compatibility with 11.x)
+	if not C_ChatInfo or not C_ChatInfo.InChatMessagingLockdown then
+		return false, nil
+	end
+
+	local isRestricted, lockdownReason = C_ChatInfo.InChatMessagingLockdown()
+
+	if not isRestricted then
+		return false, nil
+	end
+
+	-- Convert enum to human-readable string
+	local reasonText = "Unknown reason"
+	if lockdownReason then
+		if lockdownReason == Enum.ChatMessagingLockdownReason.ActiveEncounter then
+			reasonText = "Active raid encounter"
+		elseif lockdownReason == Enum.ChatMessagingLockdownReason.ActiveMythicKeystoneOrChallengeMode then
+			reasonText = "Active Mythic+ or Challenge Mode"
+		elseif lockdownReason == Enum.ChatMessagingLockdownReason.ActivePvPMatch then
+			reasonText = "Active PvP match"
+		end
+	end
+
+	return true, reasonText
+end
+
 function FunFact:SendMessage(msg, prefix, ChannelOverride)
 	-- output channel overtide logic
 	local announceChannel = FunFact.DB.Output
 	if ChannelOverride then
 		announceChannel = ChannelOverride
+	end
+
+	-- Check for chat lockdown (except SELF channel which is local-only)
+	if announceChannel ~= 'SELF' then
+		local isLocked, reason = self:IsInChatLockdown()
+		if isLocked then
+			-- Display in local UI instead
+			if self.window and self.window.tbFact then
+				self.window.tbFact:SetValue(string.format("[Chat Locked: %s] %s", reason or "Unknown", msg))
+			end
+
+			-- Log to LibAT Logger if available
+			if LibAT and LibAT.Logger and self.logger then
+				self.logger.warning(string.format("Cannot send fact to chat - Chat lockdown active: %s", reason or "Unknown"))
+			end
+
+			-- Don't send the message
+			return
+		end
 	end
 
 	-- Figure out the fact prefix if need to add it to the message
