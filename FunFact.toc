@@ -1,10 +1,11 @@
-## Interface: 110205,40401,11505
+## Interface: 120000, 50503, 38000, 11508, 20505
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
 ## Author: Wutname1
 ## X-Curse-Project-ID: 324692
 ## X-Wago-ID: J96EYg6g
+## RequiredDeps: Libs-AddonTools
 ## SavedVariables: FunFactDB
 ## IconTexture: Interface/Addons/FunFact/FunFactLogo
 ## Category: Minigames

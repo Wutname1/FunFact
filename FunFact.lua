@@ -428,8 +428,374 @@ function FunFact:OnEnable()
 		end
 	)
 
+	-- BROWSE button (centered between FACT! and More?)
+	window.BROWSE = CreateFrame('Button', nil, window)
+	window.BROWSE:SetSize(80, 25)
+	window.BROWSE:SetPoint('LEFT', window.FACT, 'RIGHT', 5, 0)
+	window.BROWSE:SetPoint('RIGHT', window.MORE, 'LEFT', -5, 0)
+
+	window.BROWSE:SetNormalAtlas('auctionhouse-nav-button')
+	window.BROWSE:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	window.BROWSE:SetPushedAtlas('auctionhouse-nav-button-select')
+	window.BROWSE:SetDisabledAtlas('UI-CastingBar-TextBox')
+
+	local browseNormalTexture = window.BROWSE:GetNormalTexture()
+	browseNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	window.BROWSE.Text = window.BROWSE:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	window.BROWSE.Text:SetPoint('CENTER')
+	window.BROWSE.Text:SetText('Browse')
+	window.BROWSE.Text:SetTextColor(1, 1, 1, 1)
+
+	window.BROWSE:HookScript(
+		'OnDisable',
+		function(btn)
+			btn.Text:SetTextColor(0.6, 0.6, 0.6, 0.6)
+		end
+	)
+
+	window.BROWSE:HookScript(
+		'OnEnable',
+		function(btn)
+			btn.Text:SetTextColor(1, 1, 1, 1)
+		end
+	)
+
+	window.BROWSE:SetScript(
+		'OnClick',
+		function()
+			FunFact:ShowBrowseWindow()
+		end
+	)
+
 	window:Hide()
 	FunFact.window = window
+
+	-- Create Browse window for viewing all facts
+	FunFact:CreateBrowseWindow()
+end
+
+---Creates the Browse window for viewing all facts in a category
+function FunFact:CreateBrowseWindow()
+	local browse = CreateFrame('Frame', 'FunFactBrowseWindow', UIParent, 'PortraitFrameTemplate')
+	ButtonFrameTemplate_HidePortrait(browse)
+	browse:SetSize(600, 500)
+	browse:SetPoint('CENTER', 0, 0)
+	browse:SetFrameStrata('DIALOG')
+	browse:SetMovable(true)
+	browse:EnableMouse(true)
+	browse:RegisterForDrag('LeftButton')
+	browse:SetScript(
+		'OnDragStart',
+		function(frame)
+			frame:StartMoving()
+		end
+	)
+	browse:SetScript(
+		'OnDragStop',
+		function(frame)
+			frame:StopMovingOrSizing()
+		end
+	)
+
+	if browse.PortraitContainer then
+		browse.PortraitContainer:Hide()
+	end
+	if browse.portrait then
+		browse.portrait:Hide()
+	end
+	browse:SetTitle('Browse Facts')
+
+	-- Category dropdown label
+	local categoryLbl = browse:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
+	categoryLbl:SetPoint('TOPLEFT', browse, 'TOPLEFT', 18, -35)
+	categoryLbl:SetText('Category:')
+
+	-- Category dropdown
+	browse.categoryDropdown = CreateFrame('DropdownButton', nil, browse, 'WowStyle1FilterDropdownTemplate')
+	browse.categoryDropdown:SetPoint('LEFT', categoryLbl, 'RIGHT', 10, 0)
+	browse.categoryDropdown:SetSize(200, 22)
+	browse.categoryDropdown:SetText('Random')
+
+	-- Setup category dropdown
+	browse.categoryDropdown:SetupMenu(
+		function(_, rootDescription)
+			for _, factInfo in ipairs(FactLists) do
+				local button =
+					rootDescription:CreateButton(
+					factInfo.text,
+					function()
+						FunFact.DB.FactList = factInfo.value
+						browse.categoryDropdown:SetText(factInfo.text)
+						FunFact.browseCurrentPage = 1
+						FunFact:UpdateBrowseWindow()
+					end
+				)
+				if FunFact.DB.FactList == factInfo.value then
+					button:SetRadio(true)
+				end
+			end
+		end
+	)
+
+	-- Page info label
+	browse.pageLabel = browse:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
+	browse.pageLabel:SetPoint('TOP', categoryLbl, 'BOTTOM', 0, -15)
+	browse.pageLabel:SetText('Page 1 of 1')
+
+	-- Scroll frame for facts
+	local scrollFrame = CreateFrame('ScrollFrame', nil, browse)
+	scrollFrame:SetPoint('TOPLEFT', browse.pageLabel, 'BOTTOMLEFT', 18, -15)
+	scrollFrame:SetPoint('BOTTOMRIGHT', browse, 'BOTTOMRIGHT', -28, 45)
+
+	-- Add background texture
+	scrollFrame.bg = scrollFrame:CreateTexture(nil, 'BACKGROUND')
+	scrollFrame.bg:SetPoint('TOPLEFT', scrollFrame, 'TOPLEFT', -6, 6)
+	scrollFrame.bg:SetPoint('BOTTOMRIGHT', scrollFrame, 'BOTTOMRIGHT', 0, -6)
+	scrollFrame.bg:SetAtlas('auctionhouse-background-index', true)
+
+	-- Modern minimal scrollbar
+	scrollFrame.ScrollBar = CreateFrame('EventFrame', nil, scrollFrame, 'MinimalScrollBar')
+	scrollFrame.ScrollBar:SetPoint('TOPLEFT', scrollFrame, 'TOPRIGHT', 6, 0)
+	scrollFrame.ScrollBar:SetPoint('BOTTOMLEFT', scrollFrame, 'BOTTOMRIGHT', 6, 0)
+	ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollFrame.ScrollBar)
+
+	-- Create the text display
+	browse.factText = CreateFrame('EditBox', nil, scrollFrame)
+	browse.factText:SetMultiLine(true)
+	browse.factText:SetFontObject('GameFontNormal')
+	browse.factText:SetWidth(scrollFrame:GetWidth() - 20)
+	browse.factText:SetAutoFocus(false)
+	browse.factText:EnableMouse(true)
+	browse.factText:SetTextColor(1, 1, 1)
+	scrollFrame:SetScrollChild(browse.factText)
+
+	-- Previous page button
+	browse.prevButton = CreateFrame('Button', nil, browse)
+	browse.prevButton:SetSize(100, 25)
+	browse.prevButton:SetPoint('BOTTOMLEFT', browse, 'BOTTOMLEFT', 10, 10)
+
+	browse.prevButton:SetNormalAtlas('auctionhouse-nav-button')
+	browse.prevButton:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	browse.prevButton:SetPushedAtlas('auctionhouse-nav-button-select')
+	browse.prevButton:SetDisabledAtlas('UI-CastingBar-TextBox')
+
+	local prevNormalTexture = browse.prevButton:GetNormalTexture()
+	prevNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	browse.prevButton.Text = browse.prevButton:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	browse.prevButton.Text:SetPoint('CENTER')
+	browse.prevButton.Text:SetText('< Previous')
+	browse.prevButton.Text:SetTextColor(1, 1, 1, 1)
+
+	browse.prevButton:HookScript(
+		'OnDisable',
+		function(btn)
+			btn.Text:SetTextColor(0.6, 0.6, 0.6, 0.6)
+		end
+	)
+
+	browse.prevButton:HookScript(
+		'OnEnable',
+		function(btn)
+			btn.Text:SetTextColor(1, 1, 1, 1)
+		end
+	)
+
+	browse.prevButton:SetScript(
+		'OnClick',
+		function()
+			FunFact:BrowsePreviousPage()
+		end
+	)
+
+	-- Next page button
+	browse.nextButton = CreateFrame('Button', nil, browse)
+	browse.nextButton:SetSize(100, 25)
+	browse.nextButton:SetPoint('BOTTOMRIGHT', browse, 'BOTTOMRIGHT', -10, 10)
+
+	browse.nextButton:SetNormalAtlas('auctionhouse-nav-button')
+	browse.nextButton:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	browse.nextButton:SetPushedAtlas('auctionhouse-nav-button-select')
+	browse.nextButton:SetDisabledAtlas('UI-CastingBar-TextBox')
+
+	local nextNormalTexture = browse.nextButton:GetNormalTexture()
+	nextNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	browse.nextButton.Text = browse.nextButton:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	browse.nextButton.Text:SetPoint('CENTER')
+	browse.nextButton.Text:SetText('Next >')
+	browse.nextButton.Text:SetTextColor(1, 1, 1, 1)
+
+	browse.nextButton:HookScript(
+		'OnDisable',
+		function(btn)
+			btn.Text:SetTextColor(0.6, 0.6, 0.6, 0.6)
+		end
+	)
+
+	browse.nextButton:HookScript(
+		'OnEnable',
+		function(btn)
+			btn.Text:SetTextColor(1, 1, 1, 1)
+		end
+	)
+
+	browse.nextButton:SetScript(
+		'OnClick',
+		function()
+			FunFact:BrowseNextPage()
+		end
+	)
+
+	-- Close button (center bottom)
+	browse.closeButton = CreateFrame('Button', nil, browse)
+	browse.closeButton:SetSize(80, 25)
+	browse.closeButton:SetPoint('BOTTOM', browse, 'BOTTOM', 0, 10)
+
+	browse.closeButton:SetNormalAtlas('auctionhouse-nav-button')
+	browse.closeButton:SetHighlightAtlas('auctionhouse-nav-button-highlight')
+	browse.closeButton:SetPushedAtlas('auctionhouse-nav-button-select')
+
+	local closeNormalTexture = browse.closeButton:GetNormalTexture()
+	closeNormalTexture:SetTexCoord(0, 1, 0, 0.7)
+
+	browse.closeButton.Text = browse.closeButton:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	browse.closeButton.Text:SetPoint('CENTER')
+	browse.closeButton.Text:SetText('Close')
+	browse.closeButton.Text:SetTextColor(1, 1, 1, 1)
+
+	browse.closeButton:SetScript(
+		'OnClick',
+		function()
+			browse:Hide()
+		end
+	)
+
+	browse:Hide()
+	FunFact.browseWindow = browse
+	FunFact.browseCurrentPage = 1
+	FunFact.browseFactsPerPage = 50
+end
+
+---Shows the Browse window with facts from the currently selected category
+function FunFact:ShowBrowseWindow()
+	if not FunFact.browseWindow then
+		return
+	end
+
+	local factList = FunFact.DB.FactList
+	local displayName = factList
+
+	-- Get the display name for the category
+	if factList == 'random' then
+		displayName = 'Random'
+	else
+		for _, factInfo in ipairs(FactLists) do
+			if factInfo.value == factList then
+				displayName = factInfo.text
+				break
+			end
+		end
+	end
+
+	-- Update the dropdown to match current selection
+	FunFact.browseWindow.categoryDropdown:SetText(displayName)
+	FunFact.browseCurrentPage = 1
+	FunFact:UpdateBrowseWindow()
+	FunFact.browseWindow:Show()
+end
+
+---Updates the Browse window content for the current page
+function FunFact:UpdateBrowseWindow()
+	if not FunFact.browseWindow then
+		return
+	end
+
+	local factList = FunFact.DB.FactList
+	local facts = {}
+
+	-- Get facts based on selected category
+	if factList == 'random' then
+		-- Collect all facts from all modules
+		for name, submodule in FunFact:IterateModules() do
+			if string.match(name, 'FactList_') and submodule.Facts then
+				for _, fact in ipairs(submodule.Facts) do
+					table.insert(facts, fact)
+				end
+			end
+		end
+	else
+		-- Get facts from specific module
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local module = FunFact:GetModule('FactList_' .. factList, true) ---@type FunFact.Module
+		if module and module.Facts then
+			for _, fact in ipairs(module.Facts) do
+				table.insert(facts, fact)
+			end
+		end
+	end
+
+	-- Calculate pagination
+	local totalFacts = #facts
+	local totalPages = math.ceil(totalFacts / FunFact.browseFactsPerPage)
+	if totalPages == 0 then
+		totalPages = 1
+	end
+
+	-- Clamp current page
+	if FunFact.browseCurrentPage > totalPages then
+		FunFact.browseCurrentPage = totalPages
+	end
+	if FunFact.browseCurrentPage < 1 then
+		FunFact.browseCurrentPage = 1
+	end
+
+	-- Update page label
+	FunFact.browseWindow.pageLabel:SetText(
+		string.format('Page %d of %d (%d total facts)', FunFact.browseCurrentPage, totalPages, totalFacts)
+	)
+
+	-- Enable/disable navigation buttons
+	if FunFact.browseCurrentPage <= 1 then
+		FunFact.browseWindow.prevButton:Disable()
+	else
+		FunFact.browseWindow.prevButton:Enable()
+	end
+
+	if FunFact.browseCurrentPage >= totalPages then
+		FunFact.browseWindow.nextButton:Disable()
+	else
+		FunFact.browseWindow.nextButton:Enable()
+	end
+
+	-- Build text for current page
+	local startIdx = (FunFact.browseCurrentPage - 1) * FunFact.browseFactsPerPage + 1
+	local endIdx = math.min(startIdx + FunFact.browseFactsPerPage - 1, totalFacts)
+
+	local text = ''
+	for i = startIdx, endIdx do
+		if facts[i] then
+			text = text .. string.format('%d. %s\n\n', i, facts[i])
+		end
+	end
+
+	FunFact.browseWindow.factText:SetText(text)
+	FunFact.browseWindow.factText:SetCursorPosition(0)
+end
+
+---Navigates to the previous page in the Browse window
+function FunFact:BrowsePreviousPage()
+	if FunFact.browseCurrentPage > 1 then
+		FunFact.browseCurrentPage = FunFact.browseCurrentPage - 1
+		FunFact:UpdateBrowseWindow()
+	end
+end
+
+---Navigates to the next page in the Browse window
+function FunFact:BrowseNextPage()
+	FunFact.browseCurrentPage = FunFact.browseCurrentPage + 1
+	FunFact:UpdateBrowseWindow()
 end
 
 function FunFact:ChatCommand(input)
