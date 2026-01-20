@@ -1,4 +1,4 @@
-## Interface: 120000, 50503, 38000, 11508, 20505
+## Interface: 120001, 120000, 50503, 38000, 11508, 20505
 ## Title: FunFact
 ## Notes: Facts. Facts for all situations.
 ## Version: @project-version@
